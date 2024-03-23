@@ -101,8 +101,8 @@ function getNextFriday(/* date */) {
  * 1, 2024 => 31
  * 2, 2024 => 29
  */
-function getCountDaysInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function getCountDaysInMonth(month, year) {
+  return new Date(year, month, 0).getDate();
 }
 
 /**
@@ -116,8 +116,11 @@ function getCountDaysInMonth(/* month, year */) {
  * '2024-02-01T00:00:00.000Z', '2024-02-02T00:00:00.000Z'  => 2
  * '2024-02-01T00:00:00.000Z', '2024-02-12T00:00:00.000Z'  => 12
  */
-function getCountDaysOnPeriod(/* dateStart, dateEnd */) {
-  throw new Error('Not implemented');
+function getCountDaysOnPeriod(dateStart, dateEnd) {
+  const timeStart = new Date(dateStart).getTime();
+  const timeEnd = new Date(dateEnd).getTime();
+  const timeDifference = timeEnd - timeStart;
+  return timeDifference / (1000 * 60 * 60 * 24) + 1;
 }
 
 /**
@@ -137,8 +140,11 @@ function getCountDaysOnPeriod(/* dateStart, dateEnd */) {
  * '2024-02-02', { start: '2024-02-02', end: '2024-03-02' } => true
  * '2024-02-10', { start: '2024-02-02', end: '2024-03-02' } => true
  */
-function isDateInPeriod(/* date, period */) {
-  throw new Error('Not implemented');
+function isDateInPeriod(date, period) {
+  const time = new Date(date).getTime();
+  const startTime = new Date(period.start).getTime();
+  const endTime = new Date(period.end).getTime();
+  return time >= startTime && time <= endTime;
 }
 
 /**
@@ -152,8 +158,25 @@ function isDateInPeriod(/* date, period */) {
  * '1999-01-05T02:20:00.000Z' => '1/5/1999, 2:20:00 AM'
  * '2010-12-15T22:59:00.000Z' => '12/15/2010, 10:59:00 PM'
  */
-function formatDate(/* date */) {
-  throw new Error('Not implemented');
+function formatDate(date) {
+  const currentDate = new Date(date);
+  const month = currentDate.getUTCMonth() + 1;
+  const numberOfMonth = currentDate.getUTCDate();
+  const year = currentDate.getUTCFullYear();
+  let hour = currentDate.getUTCHours();
+  let prefixTime = '';
+  if (hour >= 0 && hour < 12) {
+    prefixTime = 'AM';
+  } else if (hour === 12) {
+    hour = 12;
+    prefixTime = 'PM';
+  } else {
+    prefixTime = 'PM';
+    hour -= 12;
+  }
+  const minute = currentDate.getUTCMinutes();
+  const second = currentDate.getUTCSeconds();
+  return `${month}/${numberOfMonth}/${year}, ${hour}:${minute.toString().length === 1 ? `0${minute}` : minute}:${second.toString().length === 1 ? `0${second}` : second} ${prefixTime}`;
 }
 
 /**
