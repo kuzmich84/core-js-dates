@@ -86,10 +86,13 @@ function getDayName(date) {
  * Date('2024-02-13T00:00:00Z') => Date('2024-02-16T00:00:00Z')
  * Date('2024-02-16T00:00:00Z') => Date('2024-02-23T00:00:00Z')
  */
-function getNextFriday(/* date */) {
-  throw new Error('Not implemented');
+function getNextFriday(date) {
+  const nextDate = new Date(date);
+  const dayOfWeek = nextDate.getUTCDay();
+  const daysUntilFriday = (5 - dayOfWeek + 7) % 7 || 7;
+  nextDate.setUTCDate(nextDate.getUTCDate() + daysUntilFriday);
+  return nextDate;
 }
-
 /**
  * Returns the number of days in a specified month and year.
  *
@@ -246,8 +249,15 @@ function getWeekNumberByDate(/* date */) {
  * Date(2024, 0, 13) => Date(2024, 8, 13)
  * Date(2023, 1, 1) => Date(2023, 9, 13)
  */
-function getNextFridayThe13th(/* date */) {
-  throw new Error('Not implemented');
+function getNextFridayThe13th(date) {
+  const nextDate = new Date(date);
+  nextDate.setDate(nextDate.getDate() + 1);
+
+  while (!(nextDate.getDate() === 13 && nextDate.getDay() === 5)) {
+    nextDate.setDate(nextDate.getDate() + 1);
+  }
+
+  return nextDate;
 }
 
 /**
@@ -283,8 +293,29 @@ function getQuarter(date) {
  * { start: '01-01-2024', end: '15-01-2024' }, 1, 3 => ['01-01-2024', '05-01-2024', '09-01-2024', '13-01-2024']
  * { start: '01-01-2024', end: '10-01-2024' }, 1, 1 => ['01-01-2024', '03-01-2024', '05-01-2024', '07-01-2024', '09-01-2024']
  */
-function getWorkSchedule(/* period, countWorkDays, countOffDays */) {
-  throw new Error('Not implemented');
+function getWorkSchedule(period, countWorkDays, countOffDays) {
+  function parseDate(dateStr) {
+    const [day, month, year] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  function formatDateNew(date) {
+    return date.toLocaleDateString('en-GB').split('/').join('-');
+  }
+
+  const startDate = parseDate(period.start);
+  const endDate = parseDate(period.end);
+  const schedule = [];
+
+  while (startDate <= endDate) {
+    for (let i = 0; i < countWorkDays && startDate <= endDate; i += 1) {
+      schedule.push(formatDateNew(startDate));
+      startDate.setDate(startDate.getDate() + 1);
+    }
+    startDate.setDate(startDate.getDate() + countOffDays);
+  }
+
+  return schedule;
 }
 
 /**
